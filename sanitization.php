@@ -14,8 +14,8 @@ class Sanitizer extends Controller
         ]);
     }
 
-    //have to declare what kind of sanitization need for this key
-    function get_sanitize_keys()
+    //have to declare what kind of sanitization rule is required
+    function get_sanitize_rules()
     {
         return [
             'source_type'   => 'text',
@@ -30,7 +30,7 @@ class Sanitizer extends Controller
             if (is_array($value)) {
                 $value = $this->recursive_sanitize($value);
             } else {
-                $sanitize_keys = $this->get_sanitize_keys();
+                $sanitize_keys = $this->get_sanitize_rules();
                 $value = $this->sanitizer($value, Arr::get($sanitize_keys, $key, ''));
             }
         }
@@ -49,6 +49,8 @@ class Sanitizer extends Controller
             case 'url':
                 $sanitized_value = sanitize_url($value);
                 break;
+            default: //if no sanitization is required, get default value
+                $sanitized_value = $value;
         }
 
         return $sanitized_value;
