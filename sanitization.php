@@ -1,58 +1,85 @@
 <?php
 
-use WPSocialReviews\App\Http\Controllers\Controller;
-use WPSocialReviews\Framework\Request\Request;
+namespace WPSocialReviews\App\Services;
 
-class Sanitizer extends Controller
+class Sanitizer
 {
-    function get_sanitized_data(Request $request)
-    {
-        $raw_data = $request->get('raw_data');
-        $secured_data = $this->recursive_sanitize($raw_data);
-        wp_send_json_success([
-            'data'  => $secured_data
-        ]);
-    }
-
     //have to declare what kind of sanitization rule is required
-    function get_sanitize_rules()
+    function sanitizeRules()
     {
         return [
-            'source_type'   => 'text',
-            'btn_link'      => 'url',
-            'btn_text'      => 'text'
+            'name'    => 'text',
+            'rows'    => 'number',
+            'email'   => 'email',
+            'source'  => 'url'
         ];
     }
 
-    function recursive_sanitize($array)
+    function sanitizeData($rawData)
     {
-        foreach ($array as $key => &$value) {
+        $rules = $this->sanitizeRules();
+        $securedData = $this->recursiveSanitize($rawData, $rules);
+        return $securedData;
+    }
+
+    function recursiveSanitize($data, &$rules)
+    {
+        foreach ($data as $key => &$value) {
             if (is_array($value)) {
-                $value = $this->recursive_sanitize($value);
+                $value = $this->recursiveSanitize($value, $rules);
             } else {
-                $sanitize_keys = $this->get_sanitize_rules();
-                $value = $this->sanitizer($value, Arr::get($sanitize_keys, $key, ''));
+                $rule = $rules[$key];
+                $value = $this->sanitizer($value, $rule);
             }
         }
 
-        return $array;
+        return $data;
     }
 
     function sanitizer($value, $secured_key)
     {
-        $sanitized_value = '';
-
+        $sanitizedValue = '';
         switch ($secured_key) {
             case 'text':
-                $sanitized_value = sanitize_text_field($value);
+                $sanitizedValue = sanitize_text_field($value);
                 break;
             case 'url':
-                $sanitized_value = sanitize_url($value);
+                $sanitizedValue = sanitize_url($value);
+                break;
+            case 'email':
+                $sanitizedValue = sanitize_email($value);
+                break;
+            case 'number':
+                $sanitizedValue = (int)$value;
                 break;
             default: //if no sanitization is required, get default value
-                $sanitized_value = $value;
+                $sanitizedValue = $value;
         }
 
-        return $sanitized_value;
+        return $sanitizedValue;
     }
 }
+
+/*
+
+How to use it in another class?
+here's an example (ignore <code> tag):
+
+<code>
+  use Sanitizer;
+  $data = [
+        'name' => 'some dummy text',
+        'rows' => 10,
+        'random_data' => [
+            ['email' => 'email2@email.com'],
+            ['email' => '<script>email3@email.com</script>'],
+            ['source' => 'https://<script>www.google.com</script>']
+        ]
+    ];
+
+    $sanitizedData = (new Sanitizer())->sanitizeData($data);
+    var_dump($sanitizedData);
+    exit();
+</code>
+
+ */
