@@ -28,7 +28,7 @@ class Sanitizer
             if (is_array($value)) {
                 $value = $this->recursiveSanitize($value, $rules);
             } else {
-                $rule = $rules[$key];
+                $rule = isset($rules[$key]) ? $rules[$key] : '';
                 $value = $this->sanitizer($value, $rule);
             }
         }
