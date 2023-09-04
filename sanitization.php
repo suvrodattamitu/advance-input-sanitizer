@@ -1,6 +1,6 @@
 <?php
 
-namespace WPSocialReviews\App\Services;
+namespace DemoProject\App\Services;
 
 class Sanitizer
 {
@@ -66,7 +66,7 @@ How to use it in another class?
 here's an example (ignore <code> tag):
 
 <code>
-  use Sanitizer;
+  use DemoProject\App\Services\Sanitizer;
   $data = [
         'name' => 'some dummy text',
         'rows' => 10,
