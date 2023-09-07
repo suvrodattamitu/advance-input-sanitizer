@@ -3,6 +3,7 @@
 
 ```php
   use DemoProject\App\Services\InputSanitizer;
+
   $data = [
         'name' => 'some dummy text',
         'rows' => 10,
@@ -14,5 +15,6 @@
     ];
 
     $sanitizedData = (new InputSanitizer())->sanitizeData($data);
+
     update_option('demo-project-data', maybe_serialize($sanitizedData), 'no');
 ```
