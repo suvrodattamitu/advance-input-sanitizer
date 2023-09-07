@@ -2,7 +2,7 @@
 
 namespace DemoProject\App\Services;
 
-class Sanitizer
+class InputSanitizer
 {
     //have to declare what kind of sanitization rule is required
     function sanitizeRules()
@@ -60,26 +60,4 @@ class Sanitizer
     }
 }
 
-/*
 
-How to use it in another class?
-here's an example (ignore <code> tag):
-
-<code>
-  use DemoProject\App\Services\Sanitizer;
-  $data = [
-        'name' => 'some dummy text',
-        'rows' => 10,
-        'random_data' => [
-            ['email' => 'email2@email.com'],
-            ['email' => '<script>email3@email.com</script>'],
-            ['source' => 'https://<script>www.google.com</script>']
-        ]
-    ];
-
-    $sanitizedData = (new Sanitizer())->sanitizeData($data);
-    var_dump($sanitizedData);
-    exit();
-</code>
-
- */
