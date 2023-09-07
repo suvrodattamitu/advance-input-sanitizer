@@ -1,5 +1,5 @@
 ### How to use it in another class? ###
-** here's an example **
+**here's an example**
 
 ```php
   use DemoProject\App\Services\InputSanitizer;
